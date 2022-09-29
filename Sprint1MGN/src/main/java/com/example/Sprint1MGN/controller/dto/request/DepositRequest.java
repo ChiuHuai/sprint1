@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -45,6 +46,7 @@ public class DepositRequest {
 
     //can be null
     @Length(min = 1, max = 1, message = "iType should less than 6 characters")
+    @NotBlank(message = "ctTel should not be blank")
     private String iType; //存入類別 1開業 2續繳 3其他 4額外分擔金額
     @Length(max = 50, message = "pReason should less than 50 characters")
     private String pReason; //存入實體帳號原因

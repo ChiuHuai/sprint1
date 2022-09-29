@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DepositService {
@@ -24,15 +25,24 @@ public class DepositService {
     @Autowired
     private CashiRepository cashiRepository;
 
-
     @Transactional(rollbackOn = Exception.class)
     public DepositResponse deposit(DepositRequest request) {
         Mgni mgni = addMgni(request);
         List<ClearingAccount> clearingAccountList = request.getClearingAccountList();
 
-        for (ClearingAccount clearingAccount : clearingAccountList) {
-            addCashi(clearingAccount, mgni.getId(), mgni.getCcy());
+        List<String> distinctAccNos = clearingAccountList.stream().map(e -> e.getAccNo()).distinct()
+                .collect(Collectors.toList()); //取出不同 AccNo
+
+        for (String accNo : distinctAccNos) {
+            BigDecimal tempTotalAmt = new BigDecimal(0);
+            for (ClearingAccount clearingAccount : clearingAccountList) {
+                if (accNo.equals(clearingAccount.getAccNo())) {
+                    tempTotalAmt = tempTotalAmt.add(clearingAccount.getAmt());
+                }
+            }
+            addCashi(tempTotalAmt, accNo, mgni.getId(), mgni.getCcy());
         }
+
         return new DepositResponse().builder().message("OK").build();
     }
 
@@ -60,12 +70,12 @@ public class DepositService {
         return mgni;
     }
 
-    public void addCashi(ClearingAccount clearingAccount, String id, String ccy) {
+    public void addCashi(BigDecimal amt, String accNo, String id, String ccy) { //ClearingAccount clearingAccount
         Cashi cashi = new Cashi();
+        cashi.setAmt(amt);
+        cashi.setAccNo(accNo);
         cashi.setId(id);
         cashi.setCcy(ccy);
-        cashi.setAmt(clearingAccount.getAmt());
-        cashi.setAccNo(clearingAccount.getAccNo());
         cashiRepository.save(cashi);
     }
 

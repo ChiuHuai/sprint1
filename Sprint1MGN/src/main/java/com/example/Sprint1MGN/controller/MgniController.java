@@ -1,5 +1,6 @@
 package com.example.Sprint1MGN.controller;
 
+import com.example.Sprint1MGN.controller.dto.response.FindResponse;
 import com.example.Sprint1MGN.model.MgniRepository;
 import com.example.Sprint1MGN.model.entity.Mgni;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,9 @@ public class MgniController {
     @Autowired
     private MgniRepository mgniReository;
 
-    @GetMapping(path = "/findAll", produces = {MediaType.APPLICATION_XML_VALUE})
-    public List<Mgni> findAllMgni() {
-        List<Mgni> mgniList = mgniReository.findAll();
-        return mgniList;
+    @GetMapping(path = "/findAll", produces = {MediaType.APPLICATION_XML_VALUE,MediaType.APPLICATION_JSON_VALUE})
+    public FindResponse findAllMgni() {
+//        List<Mgni> mgniList = mgniReository.findAll();
+        return new FindResponse().builder().mgniList(mgniReository.findAll()).message("OK").build();
     }
 }

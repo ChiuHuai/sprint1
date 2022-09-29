@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @IdClass(CashiId.class)
 @Table(name = "CASHI")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Cashi {
     @Id
     @Column(name = "CASHI_MGNI_ID", nullable = false, length = 20)
